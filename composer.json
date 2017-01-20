@@ -1,0 +1,28 @@
+{
+  "name": "kronos/rrule",
+  "type": "library",
+  "description": "A simple object oriented rrule parser",
+  "keywords": ["rrule", "rfc2445"],
+  "homepage": "https://github.com/kronostechnologies/rrule",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Kronos Technologies",
+      "email": "sysadmin@kronostechnologies.com",
+      "homepage": "https://www.kronos.ca/",
+      "role": "Devops"
+    }
+  ],
+  "require": {
+    "php"         : ">=5.3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
+  },
+  "repositories": [
+    {"type": "git", "url": "https://github.com/kronostechnologies/rrule"}
+  ],
+  "autoload": {
+    "psr-0": { "Kronos": "src/" }
+  }
+}
