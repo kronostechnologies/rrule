@@ -634,26 +634,6 @@ class RRule {
 	}
 
 	/**
-	 * Calculate / Expand recurrence date from the rrule
-	 * @param \DateTime $start
-	 * @return \Kronos\RRule\Expander
-	 */
-	public function expand(\DateTime $start) {
-		$expander = new \Kronos\RRule\Expander();
-		$expander->startDate($start);
-		$expander->rrule($this->generateRawRRule(false));
-
-		if($this->isEndless()) {
-			$end = clone $start;
-			$end->add(new \DateInterval('P5Y'));
-			$expander->until = $end;
-		}
-
-		$expander->generateOccurences();
-		return $expander;
-	}
-
-	/**
 	 * Fully load a Recurrence object with the specified $raw_rrule.
 	 * @param string $raw_rrule
 	 * @throws \Kronos\RRule\Exceptions\InvalidRRule if $raw_rrule is malformed.
