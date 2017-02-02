@@ -1,6 +1,6 @@
 <?php
 
-namespace Kronos\Tests\RRule;
+namespace Kronos\Tests;
 
 /*
  * This is the parsing test for the RRule parser.
@@ -50,7 +50,7 @@ class RawRRuleParserTest extends \PHPUnit_Framework_TestCase {
 		$parameter_value = 'WRONG_VALUE';
 		$raw_rrule = 'RRULE:FREQ='.$parameter_value;
 		
-		$rrule = \Kronos\RRule::fromRawRRule($raw_rrule);
+		\Kronos\RRule::fromRawRRule($raw_rrule);
 	}
 	/**
 	 * @depends testExceptionGetsThrowWhenFreqRuleIsMalformed
@@ -60,7 +60,7 @@ class RawRRuleParserTest extends \PHPUnit_Framework_TestCase {
 		$raw_rrule = 'RRULE:FREQ='.$parameter_value;
 		
 		try{
-			$rrule = \Kronos\RRule::fromRawRRule($raw_rrule);
+			\Kronos\RRule::fromRawRRule($raw_rrule);
 			$this->fail('Should have thrown \Kronos\RRule\Exceptions\InvalidParameterValue.');
 		}
 		catch(\Kronos\RRule\Exceptions\InvalidParameterValue $e){
@@ -100,7 +100,7 @@ class RawRRuleParserTest extends \PHPUnit_Framework_TestCase {
 		$parameter_value = '2012-01-01 14:14:14';
 		
 		$raw_rrule = 'RRULE:UNTIL='.$parameter_value;
-		$rrule = \Kronos\RRule::fromRawRRule($raw_rrule);
+		\Kronos\RRule::fromRawRRule($raw_rrule);
 	}
 	/**
 	 * @depends testExceptionGetsThrownWhenUntilIsMalformed

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kronos\Tests\RRule;
+namespace Kronos\Tests;
 
 /*
  * This is the parsing test for the RRule parser.
