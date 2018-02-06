@@ -4,7 +4,7 @@
   "description": "A simple object oriented rrule parser",
   "keywords": ["rrule", "rfc2445"],
   "homepage": "https://github.com/kronostechnologies/rrule",
-  "license": "GPL",
+  "license": "MIT",
   "authors": [
     {
       "name": "Kronos Technologies",
