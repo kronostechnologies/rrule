@@ -12,7 +12,7 @@ class InvalidParameterValue extends \Exception{
 	 */
 	protected $_parameter_name;
 	/**
-	 * @var string 
+	 * @var mixed
 	 */
 	protected $_parameter_value;
 	/**
@@ -26,15 +26,21 @@ class InvalidParameterValue extends \Exception{
 	public function getParameterName(){
 		return $this->_parameter_name;
 	}
+	/**
+	 * @param string $value
+	 */
 	protected function setParameterName($value){
 		$this->_parameter_name = $value;
 	}
 	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getParameterValue(){
 		return $this->_parameter_value;
 	}
+	/**
+	 * @param mixed $value
+	 */
 	protected function setParameterValue($value){
 		$this->_parameter_value = $value;
 	}
@@ -46,6 +52,9 @@ class InvalidParameterValue extends \Exception{
 	public function getExplanation(){
 		return $this->_explanation;
 	}
+	/**
+	 * @param string $value
+	 */
 	protected function setExplanation($value){
 		$this->_explanation = $value;
 	}
@@ -53,12 +62,12 @@ class InvalidParameterValue extends \Exception{
 	/**
 	 * Thrown when an invalid frequency (FREQ parameter) is detected.
 	 * @param string $parameter_name The parameter name.
-	 * @param string $parameter_value The value of the parameter.
+	 * @param mixed $parameter_value The value of the parameter.
 	 * @param string $explanation The explanation of why the given parameter is invalid
-	 * @param string $code 
+	 * @param int $code
 	 * @param \Exception $previous 
 	 */
-	public function __construct($parameter_name, $parameter_value, $explanation = null, $code = null, $previous = null){
+	public function __construct($parameter_name, $parameter_value, $explanation = null, $code = 0, $previous = null){
 		parent::__construct('Explanation:"'.$explanation.'", Parameter:"'.$parameter_name.'", Value:"'.$parameter_value.'"', $code, $previous);
 		
 		$this->setParameterName($parameter_name);

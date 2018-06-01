@@ -6,8 +6,14 @@ namespace Kronos\RRule\Exceptions;
  * Thrown when the rrule is malformed
  */
 class InvalidRRule extends \Exception{
-	
+
+	/**
+	 * @var string
+	 */
 	protected $_invalid_rrule;
+	/**
+	 * @var string
+	 */
 	protected $_explanation;
 	
 	/**
@@ -17,6 +23,9 @@ class InvalidRRule extends \Exception{
 	public function getRRule(){
 		return $this->_invalid_rrule;
 	}
+	/**
+	 * @param string $value
+	 */
 	protected function setRRule($value){
 		$this->_invalid_rrule = $value;
 	}
@@ -28,6 +37,9 @@ class InvalidRRule extends \Exception{
 	public function getExplanation(){
 		return $this->_explanation;
 	}
+	/**
+	 * @param string $value
+	 */
 	protected function setExplanation($value){
 		$this->_explanation = $value;
 	}
@@ -36,10 +48,10 @@ class InvalidRRule extends \Exception{
 	 * Thrown when an invalid RRule is detected.
 	 * @param string $invalid_rrule The raw RRule string.
 	 * @param string $explanation The explanation of why the given rrule is invalid
-	 * @param string $code 
+	 * @param int $code
 	 * @param \Exception $previous 
 	 */
-	public function __construct($invalid_rrule, $explanation = null, $code = null, $previous = null){
+	public function __construct($invalid_rrule, $explanation = null, $code = 0, $previous = null){
 		parent::__construct('Explanation:"'.$explanation.'", RawRRule:"'.$invalid_rrule.'"', $code, $previous);
 		
 		$this->setRRule($invalid_rrule);

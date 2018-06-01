@@ -31,23 +31,23 @@ class RawRRuleGeneratorTest extends \PHPUnit_Framework_TestCase {
 	
 	public function testCountIsHere(){
 		$parameter = \Kronos\RRule\Enums\Parameters::COUNT;
-		$value = '1';
+		$value = 1;
 		
 		$this->_rrule->setCount($value);
 		$generated_raw_rrule = $this->_rrule->generateRawRRule();
 		
 		$this->assertTrue(strpos($generated_raw_rrule, $parameter) !== false);
-		$this->assertTrue(strpos($generated_raw_rrule, $value) !== false);
+		$this->assertTrue(strpos($generated_raw_rrule, (string)$value) !== false);
 	}
 	public function testIntervalIsHere(){
 		$parameter = \Kronos\RRule\Enums\Parameters::INTERVAL;
-		$value = '1';
+		$value = 1;
 		
 		$this->_rrule->setInterval($value);
 		$generated_raw_rrule = $this->_rrule->generateRawRRule();
 		
 		$this->assertTrue(strpos($generated_raw_rrule, $parameter) !== false);
-		$this->assertTrue(strpos($generated_raw_rrule, $value) !== false);
+		$this->assertTrue(strpos($generated_raw_rrule, (string)$value) !== false);
 	}
 	public function testWkstIsHere(){
 		$parameter = \Kronos\RRule\Enums\Parameters::WKST;

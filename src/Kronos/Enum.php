@@ -41,7 +41,6 @@ abstract class  Enum {
 	/**
 	 * Check whether or not the value is defined in the array of constant for a given enum classname.
 	 * @param mixed $value An enum value to verify
-	 * @param string $classname The enum classname to verify. Default is the current classname.
 	 * @return boolean True if the value is defined otherwise false.
 	 */
 	final static public function inEnum($value){
@@ -55,7 +54,6 @@ abstract class  Enum {
 
 	/**
 	 * Convert this Enum to a key(const name)=>value(const value) array.
-	 * @param string $classname The enum classname to verify. Default is the current classname.
 	 * @return array A key=>value array.
 	 */
 	final static public function toArray(){

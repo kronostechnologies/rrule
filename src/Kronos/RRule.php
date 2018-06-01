@@ -685,7 +685,7 @@ class RRule {
 								\Kronos\RRule\Enums\Parameters::UNTIL,
 								$param,
 								'Until parameter found but it seems to be an invalid or malformed date.',
-								null,
+								0,
 								$e
 							);
 						}
