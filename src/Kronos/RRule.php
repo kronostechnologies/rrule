@@ -2,6 +2,10 @@
 
 namespace Kronos;
 
+use Kronos\RRule\Enums\Parameters;
+use Kronos\RRule\Exceptions\InvalidParameterValue;
+use Kronos\RRule\Exceptions\InvalidRRule;
+
 /**
  * RRULE parser for RFC 5545
  */
@@ -10,7 +14,7 @@ class RRule {
 	 * UTC until date format that is used in the generated RRule string.
 	 */
 	const RRULE_UNTIL_DATE_FORMAT = 'Ymd\THis\Z';
-	
+
 	/**
 	 * @var string
 	 */
@@ -24,7 +28,7 @@ class RRule {
 	 */
 	protected $_until_in_current_timezone;
 	/**
-	 * @var int >=0 
+	 * @var int >=0
 	 */
 	protected $_count;
 	/**
@@ -32,15 +36,15 @@ class RRule {
 	 */
 	protected $_interval;
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_byday = [];
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_bymonthday = [];
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_byyearday = [];
 	/**
@@ -48,15 +52,15 @@ class RRule {
 	 */
 	protected $_byweekno = [];
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_bymonth = [];
 	/**
-	 * @var array 
+	 * @var array
 	 */
 	protected $_bysetpos = [];
 	/**
-	 * @var string 
+	 * @var string
 	 */
 	protected $_wkst;
 	/**
@@ -71,19 +75,19 @@ class RRule {
 	 * @var array
 	 */
 	protected $_byhour = [];
-	
+
 	/**
 	 * @param string $value Defined in RRule\\Kronos\RRule\Enums\Frequencies
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setFrequency($value){
 		if(\Kronos\RRule\Enums\Frequencies::inEnum($value)){
 			$this->_frequency = $value;
 			return $this;
 		}
-		throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-			\Kronos\RRule\Enums\Parameters::FREQ,
+		throw new InvalidParameterValue(
+			Parameters::FREQ,
 			$value,
 			'The given frequency is not valid. Look the definition of frequencies in \Kronos\RRule\Enums\Frequencies'
 		);
@@ -94,18 +98,18 @@ class RRule {
 	public function getFrequency(){
 		return $this->_frequency;
 	}
-	
+
 	/**
 	 * Will convert the timezone of $value to UTC with setTimezone('UTC').
 	 * Consider using the function setUntilAsString.
 	 * @param \DateTime $value
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setUntil(\DateTime $value){
 		if(!self::validateUntilDate($value)){
-			throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-				\Kronos\RRule\Enums\Parameters::UNTIL,
+			throw new InvalidParameterValue(
+				Parameters::UNTIL,
 				$value->format(self::RRULE_UNTIL_DATE_FORMAT),
 				'The until date provided seems to be an invalid or malformed date.'
 			);
@@ -113,17 +117,17 @@ class RRule {
 
 		$this->_until = clone $value;
 		$this->_until_in_current_timezone = clone $value;
-		
+
 		$this->_until->setTimezone(new \DateTimeZone('UTC'));
 		$this->_until_in_current_timezone->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-		
+
 		return $this;
 	}
 	/**
 	 * Parse the given $value to generate a new \DateTime object. Any warning or error during parsing will throw \Kronos\RRule\Exceptions\InvalidParameterValue.
 	 * The warning and error are fetched using the \DateTime::getLastErrors static function (http://php.net/manual/fr/datetime.getlasterrors.php).
 	 * @param string $value
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
+	 * @throws InvalidParameterValue
 	 * @return RRule
 	 */
 	public function setUntilAsString($value){
@@ -137,8 +141,8 @@ class RRule {
 			$error_string .= 'ERRORS: '.implode(', ', $error['errors']).';';
 		}
 		if($error_string){
-			throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-				\Kronos\RRule\Enums\Parameters::UNTIL,
+			throw new InvalidParameterValue(
+				Parameters::UNTIL,
 				$value,
 				'Could not parse Until date. '.$error_string
 			);
@@ -153,7 +157,7 @@ class RRule {
 	public function getUntil(){
 		return $this->_until;
 	}
-	
+
 	/**
 	 * Return the until date into the current timezone.
 	 * The object returned use the date_default_timezone_get() function to get the default timezone at the time of assigning.
@@ -162,47 +166,47 @@ class RRule {
 	public function getUntilInDefaultTimezone(){
 		return $this->_until_in_current_timezone;
 	}
-	
+
 	/**
 	 * 0 is a valid value however, setting a count to 0 would mean that the recurrence is inexistant therefor, the count parameter
 	 * won't be present in the generated rrule and act as if there is no Count parameter.
 	 * @param int $value >=0
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setCount($value){
 		if($value >= 0) {
 			$this->_count = $value;
 			return $this;
 		}
-		
-		throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-			\Kronos\RRule\Enums\Parameters::COUNT, 
-			$value, 
+
+		throw new InvalidParameterValue(
+			Parameters::COUNT,
+			$value,
 			'Count needs to be greater or equals to zero (>=0).'
 		);
 	}
 	/**
-	 * @return int 
+	 * @return int
 	 */
 	public function getCount(){
 		return $this->_count;
 	}
-	
+
 	/**
 	 * @param int $value >=1
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setInterval($value){
 		if($value >= 1){
 			$this->_interval = $value;
 			return $this;
 		}
-		
-		throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-			\Kronos\RRule\Enums\Parameters::INTERVAL, 
-			$value, 
+
+		throw new InvalidParameterValue(
+			Parameters::INTERVAL,
+			$value,
 			'Interval needs to be greater or equals to 1 (>=1)'
 		);
 	}
@@ -212,21 +216,21 @@ class RRule {
 	public function getInterval(){
 		return $this->_interval;
 	}
-	
+
 	/**
 	 * @param array $values An array of value as defined in the Recurrence\\Kronos\RRule\Enums\Days enumeration optionally
 	 * preceded by a positive or negative integer i.e. -1MO, +1FR, etc.
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByDay(array $values){
 		$valid_day_values = implode('|', \Kronos\RRule\Enums\Days::toArray());
-		
+
 		foreach($values as $value){
-			
+
 			if(preg_match('/^(-|\+)?([1-9])?('.$valid_day_values.')+$/', $value, $matches) == false){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYDAY, 
+				throw new InvalidParameterValue(
+					Parameters::BYDAY,
 					implode(',', $values),
 					'Byday value is not valid. It Must be positive (+) or negative (-) integer followed by a valid day. '.
 					'Look for Recurrence\\Kronos\RRule\Enums\Days as this gives you the valid days.'.
@@ -234,40 +238,40 @@ class RRule {
 				);
 			}
 			elseif(!empty($matches[2]) && ($matches[2] < 1 || $matches[2] > 53)){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYDAY, 
+				throw new InvalidParameterValue(
+					Parameters::BYDAY,
 					implode(',', $values),
 					'Byday rule is invalid. The integer part of the rule is invalid.'.
 					'It must be greater or equals to 1 and smaller or equals to 53 (-53 to 53 excluding 0).'.
 					'The value that cause problem is *'.$value.'*'
 				);
-			}			
-			
+			}
+
 		}
-		
+
 		$this->_byday = $values;
 		return $this;
 	}
 	/**
-	 * Returns an array of values as defined in the Recurrence\\Kronos\RRule\Enums\Days enumeration optionally 
+	 * Returns an array of values as defined in the Recurrence\\Kronos\RRule\Enums\Days enumeration optionally
 	 * preceded by a positive or negative integer i.e. -1MO, +1FR, etc.
 	 * @return array An array of string
 	 */
 	public function getByDay(){
 		return $this->_byday;
 	}
-	
+
 	/**
 	 * @param array $values $values are integer and must respect the rule [-31, 1] & [1 to 31].
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByMonthDay(array $values){
 		foreach($values as $value){
 			$value = (int)$value;
 			if($value < -31 || $value > 31 || $value == 0){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYMONTHDAY, 
+				throw new InvalidParameterValue(
+					Parameters::BYMONTHDAY,
 					implode(',', $values),
 					'Bymonthday value is not valid. It must be greater or equals to -31 and smaller '.
 					' or equals to 31 and not be 0 (-31 to 31 excluding 0).'.
@@ -285,18 +289,18 @@ class RRule {
 	public function getByMonthDay(){
 		return $this->_bymonthday;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByYearDay(array $values){
 		foreach($values as $value){
 			$value = (int)$value;
 			if($value < -366 || $value == 0 || $value > 366){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYYEARDAY, 
+				throw new InvalidParameterValue(
+					Parameters::BYYEARDAY,
 					implode(',', $values),
 					'Byyearday value is not valid. It must be greater or equals to -366 and smaller '.
 					' or equals to 366 and not be 0 (-366 to 366 excluding 0).'.
@@ -308,23 +312,23 @@ class RRule {
 		return $this;
 	}
 	/**
-	 * @return array 
+	 * @return array
 	 */
 	public function getByYearDay(){
 		return $this->_byyearday;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByWeekNo(array $values){
 		foreach($values as $value){
 			$value = (int)$value;
 			if($value < -53 || $value == 0 || $value > 53){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYWEEKNO, 
+				throw new InvalidParameterValue(
+					Parameters::BYWEEKNO,
 					implode(',', $values),
 					'Byweekno value is not valid. It must be greater or equals to -53 and smaller '.
 					'or equals to 53 and not be 0 (-53 to 53 excluding 0).'.
@@ -341,12 +345,12 @@ class RRule {
 	public function getByWeekNo(){
 		return $this->_byweekno;
 	}
-	
+
 	/**
 	 * Set the month value. It must be [1 to 12]. Use \Kronos\RRule\Enums\Month for reference.
 	 * @param array $values Defined in \Kronos\RRule\Enums\Months
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByMonth(array $values){
 		if(\Kronos\RRule\Enums\Months::inEnum($values)){
@@ -354,8 +358,8 @@ class RRule {
 			return $this;
 		}
 
-		throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-			\Kronos\RRule\Enums\Parameters::BYMONTH,
+		throw new InvalidParameterValue(
+			Parameters::BYMONTH,
 			implode(',', $values),
 			'Bymonth value is not valid. It must be greater or equals to 1 and smaller '.
 			'or equals to 12 (1 to 12). Look for \Kronos\RRule\Enums\Months for valid month value.'
@@ -368,18 +372,18 @@ class RRule {
 	public function getByMonth(){
 		return $this->_bymonth;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setBySetPos(array $values){
 		foreach($values as $value){
 			$value = (int)$value;
 			if($value < -366 || $value == 0 or $value > 366){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYSETPOS, 
+				throw new InvalidParameterValue(
+					Parameters::BYSETPOS,
 					implode(',', $values),
 					'Bysetpos value is not valid. It must be greater or equals to -366 and smaller '.
 					' or equals to 366 and not be 0 (-366 to 366 excluding 0).'.
@@ -387,7 +391,7 @@ class RRule {
 				);
 			}
 		}
-		
+
 		$this->_bysetpos = $values;
 		return $this;
 	}
@@ -397,11 +401,11 @@ class RRule {
 	public function getBySetPos(){
 		return $this->_bysetpos;
 	}
-	
+
 	/**
 	 * @param string $value Defined in Recurrence\\Kronos\RRule\Enums\Days
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setWkst($value){
 		if(\Kronos\RRule\Enums\Days::inEnum($value)){
@@ -409,8 +413,8 @@ class RRule {
 			return $this;
 		}
 
-		throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-			\Kronos\RRule\Enums\Parameters::WKST,
+		throw new InvalidParameterValue(
+			Parameters::WKST,
 			$value,
 			'Wkst value is not valid. Look for \Kronos\RRule\Enums\Days for valid value.'
 		);
@@ -423,25 +427,25 @@ class RRule {
 	public function getWkst(){
 		return $this->_wkst;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setBySecond(array $values){
 		foreach($values as $value) {
 			$value = (int)$value;
 			if($value < 0 || $value > 60){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYSECOND, 
+				throw new InvalidParameterValue(
+					Parameters::BYSECOND,
 					implode(',', $values),
 					'Bysecond value is not valid. It must be greater or equals to 0 and smaller or equals to 60 (0 to 60).'.
 					'The value that cause problem is *'.$value.'*'
 				);
 			}
 		}
-		
+
 		$this->_bysecond = $values;
 		return $this;
 	}
@@ -451,25 +455,25 @@ class RRule {
 	public function getBySecond(){
 		return $this->_bysecond;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
-	 * @return RRule 
+	 * @throws InvalidParameterValue
+	 * @return RRule
 	 */
 	public function setByMinute(array $values){
 		foreach($values as $value) {
 			$value = (int)$value;
 			if($value < 0 || $value > 59){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYMINUTE, 
+				throw new InvalidParameterValue(
+					Parameters::BYMINUTE,
 					implode(',', $values),
 					'Byminute value is not valid. It must be greater or equals to 0 and smaller or equals to 59 (0 to 59).'.
 					'The value that cause problem is *'.$value.'*'
 				);
 			}
 		}
-		
+
 		$this->_byminute = $values;
 		return $this;
 	}
@@ -479,25 +483,25 @@ class RRule {
 	public function getByMinute(){
 		return $this->_byminute;
 	}
-	
+
 	/**
 	 * @param array $values
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue
+	 * @throws InvalidParameterValue
 	 * @return RRule
 	 */
 	public function setByHour(array $values){
 		foreach($values as $value) {
 			$value = (int)$value;
 			if($value < 0 || $value > 23){
-				throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-					\Kronos\RRule\Enums\Parameters::BYHOUR, 
+				throw new InvalidParameterValue(
+					Parameters::BYHOUR,
 					implode(',', $values),
 					'Byhour value is not valid. It must be greater or equals to 0 and smaller or equals to 23 (0 to 23).'.
 					'The value that cause problem is *'.$value.'*'
 				);
 			}
 		}
-		
+
 		$this->_byhour = $values;
 		return $this;
 	}
@@ -515,14 +519,14 @@ class RRule {
 	public function isEndless() {
 		return !$this->getCount() && !$this->getUntil();
 	}
-	
-	
+
+
 	public function __construct(){}
-	
+
 	/**
 	 * Generate the raw_rrule for this object. If you're not sure if this rrule object is valid, call the validate() function.
 	 * @param bool $include_property_name If true, add "RRULE:" in front of the rrule i.e.: RRULE:{the_rrule_string}. DEFAULT true
-	 * @return string 
+	 * @return string
 	 */
 	public function generateRawRRule($include_property_name=true){
 
@@ -530,26 +534,26 @@ class RRule {
 			$raw_rrule = 'RRULE:';
 		else
 			$raw_rrule = '';
-		
-		$raw_rrule .= \Kronos\RRule\Enums\Parameters::FREQ . '=' . $this->getFrequency();
-		
-		if($this->getByDay()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYDAY . '=' . implode(',', $this->getByDay());
-		if($this->getByHour()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYHOUR . '=' . implode(',', $this->getByHour());
-		if($this->getByMinute()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYMINUTE . '=' . implode(',', $this->getByMinute());
-		if($this->getByMonth()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYMONTH . '=' . implode(',', $this->getByMonth());
-		if($this->getByMonthDay()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYMONTHDAY . '=' . implode(',', $this->getByMonthDay());
-		if($this->getBySecond()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYSECOND . '=' . implode(',', $this->getBySecond());
-		if($this->getBySetPos()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYSETPOS . '=' . implode(',', $this->getBySetPos());
-		if($this->getByWeekNo()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYWEEKNO . '=' . implode(',', $this->getByWeekNo());
-		if($this->getByYearDay()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::BYYEARDAY . '=' . implode(',', $this->getByYearDay());
-		if($this->getCount()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::COUNT . '=' . $this->getCount();
-		if($this->getInterval()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::INTERVAL . '=' . $this->getInterval();
-		if($this->getUntil()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::UNTIL . '=' . $this->getUntil()->format(self::RRULE_UNTIL_DATE_FORMAT);
-		if($this->getWkst()) $raw_rrule .= ';'.\Kronos\RRule\Enums\Parameters::WKST . '=' . $this->getWkst();
+
+		$raw_rrule .= Parameters::FREQ . '=' . $this->getFrequency();
+
+		if($this->getByDay()) $raw_rrule .= ';'. Parameters::BYDAY . '=' . implode(',', $this->getByDay());
+		if($this->getByHour()) $raw_rrule .= ';'. Parameters::BYHOUR . '=' . implode(',', $this->getByHour());
+		if($this->getByMinute()) $raw_rrule .= ';'. Parameters::BYMINUTE . '=' . implode(',', $this->getByMinute());
+		if($this->getByMonth()) $raw_rrule .= ';'. Parameters::BYMONTH . '=' . implode(',', $this->getByMonth());
+		if($this->getByMonthDay()) $raw_rrule .= ';'. Parameters::BYMONTHDAY . '=' . implode(',', $this->getByMonthDay());
+		if($this->getBySecond()) $raw_rrule .= ';'. Parameters::BYSECOND . '=' . implode(',', $this->getBySecond());
+		if($this->getBySetPos()) $raw_rrule .= ';'. Parameters::BYSETPOS . '=' . implode(',', $this->getBySetPos());
+		if($this->getByWeekNo()) $raw_rrule .= ';'. Parameters::BYWEEKNO . '=' . implode(',', $this->getByWeekNo());
+		if($this->getByYearDay()) $raw_rrule .= ';'. Parameters::BYYEARDAY . '=' . implode(',', $this->getByYearDay());
+		if($this->getCount()) $raw_rrule .= ';'. Parameters::COUNT . '=' . $this->getCount();
+		if($this->getInterval()) $raw_rrule .= ';'. Parameters::INTERVAL . '=' . $this->getInterval();
+		if($until = $this->getUntil()) $raw_rrule .= ';'. Parameters::UNTIL . '=' . $until->format(self::RRULE_UNTIL_DATE_FORMAT);
+		if($this->getWkst()) $raw_rrule .= ';'. Parameters::WKST . '=' . $this->getWkst();
 
 		return $raw_rrule;
 	}
-	
+
 	/**
 	 * Check the consistency between the different value i.e. FREQ rule part was not filled properly.
 	 * @throws \Kronos\RRule\Exceptions\InvalidRRuleState
@@ -557,29 +561,29 @@ class RRule {
 	 */
 	public function validate(){
 		if(!$this->getFrequency()){
-			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(\Kronos\RRule\Enums\Parameters::FREQ, 'FREQ rule part MUST be specified in the recurrence rule.');
+			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(Parameters::FREQ, 'FREQ rule part MUST be specified in the recurrence rule.');
 		}
 		if($this->getByDay()){
-			if($this->getFrequency() != \Kronos\RRule\Enums\Frequencies::MONTHLY && 
+			if($this->getFrequency() != \Kronos\RRule\Enums\Frequencies::MONTHLY &&
 			   $this->getFrequency() != \Kronos\RRule\Enums\Frequencies::YEARLY)
 			{
 				foreach($this->getByDay() as $day){
 					if((int)$day){
 						throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
-							\Kronos\RRule\Enums\Parameters::BYDAY, 
+							Parameters::BYDAY,
 							'The BYDAY rule part MUST NOT be specified with a numeric value when the '.
 							'FREQ rule part is not set to MONTHLY or YEARLY'
 						);
 					}
 				}
 			}
-			if($this->getByWeekNo() && 
+			if($this->getByWeekNo() &&
 			   $this->getFrequency() == \Kronos\RRule\Enums\Frequencies::YEARLY)
 			{
 				foreach($this->getByDay() as $day){
 					if((int)$day){
 						throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
-							\Kronos\RRule\Enums\Parameters::BYDAY, 
+							Parameters::BYDAY,
 							'BYDAY rule part MUST NOT be specified with a numeric value with the '.
 							'FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified.'
 						);
@@ -591,26 +595,26 @@ class RRule {
 		   $this->getFrequency() == \Kronos\RRule\Enums\Frequencies::WEEKLY)
 		{
 			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
-				\Kronos\RRule\Enums\Parameters::BYMONTHDAY, 
+				Parameters::BYMONTHDAY,
 				'BYMONTHDAY rule part MUST NOT be specified when the FREQ rule part is set to WEEKLY'
 			);
 		}
-		if($this->getByYearDay() && 
+		if($this->getByYearDay() &&
 		   ($this->getFrequency() == \Kronos\RRule\Enums\Frequencies::DAILY ||
 		    $this->getFrequency() == \Kronos\RRule\Enums\Frequencies::WEEKLY ||
 		    $this->getFrequency() == \Kronos\RRule\Enums\Frequencies::MONTHLY))
 		{
 			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
-				\Kronos\RRule\Enums\Parameters::BYYEARDAY, 
+				Parameters::BYYEARDAY,
 				'BYYEARDAY rule part MUST NOT be specified when the FREQ rule part is set to DAILY, WEEKLY, or MONTHLY.'
 			);
 		}
-		
-		if($this->getByWeekNo() && 
+
+		if($this->getByWeekNo() &&
 		   $this->getFrequency() != \Kronos\RRule\Enums\Frequencies::YEARLY)
 		{
 			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
-				\Kronos\RRule\Enums\Parameters::BYWEEKNO, 
+				Parameters::BYWEEKNO,
 				'BYWEEKNO part MUST NOT be used when the FREQ rule part is set to anything other than YEARLY.'
 			);
 		}
@@ -624,36 +628,36 @@ class RRule {
 		   !$this->getByWeekNo() &&
 		   !$this->getByYearDay())
 		{
-			throw new \Kronos\RRule\Exceptions\InvalidRRuleState( 
-				\Kronos\RRule\Enums\Parameters::BYSETPOS, 
+			throw new \Kronos\RRule\Exceptions\InvalidRRuleState(
+				Parameters::BYSETPOS,
 				'BYSETPOS rule part MUST only be used in conjunction with another BYxxx rule part.'
 			);
 		}
-		
+
 		return true;
 	}
 
 	/**
 	 * Fully load a Recurrence object with the specified $raw_rrule.
 	 * @param string $raw_rrule
-	 * @throws \Kronos\RRule\Exceptions\InvalidRRule if $raw_rrule is malformed.
-	 * @throws \Kronos\RRule\Exceptions\InvalidParameterValue if some parameter of $raw_rrule are malformed.
-	 * @return RRule 
+	 * @throws InvalidRRule if $raw_rrule is malformed.
+	 * @throws InvalidParameterValue if some parameter of $raw_rrule are malformed.
+	 * @return RRule
 	 */
 	public static function fromRawRRule($raw_rrule){
 		$modified_raw_rrule = strtoupper($raw_rrule);
-		
+
 		if(strpos($modified_raw_rrule, 'RRULE:') === 0){
 			$modified_raw_rrule = str_replace('RRULE:', '', $modified_raw_rrule);
 		}
-		
+
 		$modified_raw_rrule = trim($modified_raw_rrule, ";");
-		
+
 		$parts = explode(";", $modified_raw_rrule);
 
-		if(empty($parts) || empty($parts[0])){
-			throw new \Kronos\RRule\Exceptions\InvalidRRule(
-				$raw_rrule, 
+		if(empty($parts[0])){
+			throw new InvalidRRule(
+				$raw_rrule,
 				'No parameter were found. Parameter should be defined like NAME=RULE separated by semi-colon";"'
 			);
 		}
@@ -661,28 +665,28 @@ class RRule {
 		foreach($parts as $rrule_param)
 		{
 			if(!strpos($rrule_param, '=')) {
-				throw new \Kronos\RRule\Exceptions\InvalidRRule(
+				throw new InvalidRRule(
 					$raw_rrule,
 					'Parameter should be defined like NAME=RULE'
 				);
 			}
 
 			list($rule, $param) = explode("=", $rrule_param);
-			
+
 			switch($rule)
 			{
-				case \Kronos\RRule\Enums\Parameters::FREQ:
+				case Parameters::FREQ:
 					$recurrence->setFrequency($param);
 					break;
-				case \Kronos\RRule\Enums\Parameters::UNTIL:
+				case Parameters::UNTIL:
 					if(self::validateUntilDateString($param)){
 						try{
 							$date_time = new \DateTime(trim($param, 'Z'), new \DateTimeZone('UTC'));
 							$recurrence->setUntil($date_time);
 						}
 						catch(\Exception $e){
-							throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-								\Kronos\RRule\Enums\Parameters::UNTIL,
+							throw new InvalidParameterValue(
+								Parameters::UNTIL,
 								$param,
 								'Until parameter found but it seems to be an invalid or malformed date.',
 								0,
@@ -691,130 +695,130 @@ class RRule {
 						}
 					}
 					else{
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-								\Kronos\RRule\Enums\Parameters::UNTIL,
+						throw new InvalidParameterValue(
+								Parameters::UNTIL,
 								$param,
 								'Until parameter found but it seems to be an invalid or malformed date.'
 							);
 					}
 					break;
-				case \Kronos\RRule\Enums\Parameters::COUNT:
-					$recurrence->setCount($param);
+				case Parameters::COUNT:
+					$recurrence->setCount((int)$param);
 					break;
-				case \Kronos\RRule\Enums\Parameters::INTERVAL:
-					$recurrence->setInterval($param);
+				case Parameters::INTERVAL:
+					$recurrence->setInterval((int)$param);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYSECOND:
+				case Parameters::BYSECOND:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYSECOND, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYSECOND,
+							$param,
 							'Bysecond parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setBySecond($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYMINUTE:
+				case Parameters::BYMINUTE:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYMINUTE, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYMINUTE,
+							$param,
 							'Byminute parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByMinute($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYHOUR:
+				case Parameters::BYHOUR:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYHOUR, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYHOUR,
+							$param,
 							'Byhour parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByHour($params);
 					break;
-				
-				case \Kronos\RRule\Enums\Parameters::BYDAY:
+
+				case Parameters::BYDAY:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYDAY, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYDAY,
+							$param,
 							'Byday parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
-						
+
 					$recurrence->setByDay($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYMONTHDAY:
+				case Parameters::BYMONTHDAY:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYMONTHDAY, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYMONTHDAY,
+							$param,
 							'Bymonthday parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByMonthDay($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYYEARDAY:
+				case Parameters::BYYEARDAY:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYYEARDAY, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYYEARDAY,
+							$param,
 							'Byyearday parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByYearDay($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYWEEKNO:
+				case Parameters::BYWEEKNO:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYWEEKNO, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYWEEKNO,
+							$param,
 							'Byweekno parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByWeekNo($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYMONTH:
+				case Parameters::BYMONTH:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYWEEKNO, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYWEEKNO,
+							$param,
 							'Bymonth parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setByMonth($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::BYSETPOS:
+				case Parameters::BYSETPOS:
 					$params = explode(",", $param);
-					if(empty($params)){
-						throw new \Kronos\RRule\Exceptions\InvalidParameterValue(
-							\Kronos\RRule\Enums\Parameters::BYSETPOS, 
-							$param, 
+					if(empty($params[0])){
+						throw new InvalidParameterValue(
+							Parameters::BYSETPOS,
+							$param,
 							'Bymonth parameter found but it\'s values were either empty or malformed. '.
 							'It must be comma separated values.'
 						);
 					}
 					$recurrence->setBySetPos($params);
 					break;
-				case \Kronos\RRule\Enums\Parameters::WKST:
+				case Parameters::WKST:
 					$recurrence->setWkst($param);
 					break;
 			}
