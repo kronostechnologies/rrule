@@ -24,7 +24,10 @@
     {"type": "git", "url": "https://github.com/kronostechnologies/rrule"}
   ],
   "autoload": {
-    "psr-0": { "Kronos": "src/" }
+    "psr-4": {
+      "Kronos\\": "src/Kronos/",
+      "Kronos\\Tests\\": "tests/Kronos"
+    }
   },
   "config": {
     "platform": {

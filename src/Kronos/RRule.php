@@ -655,7 +655,7 @@ class RRule {
 
 		$parts = explode(";", $modified_raw_rrule);
 
-		if(empty($parts[0])){
+		if($parts === ['']){
 			throw new InvalidRRule(
 				$raw_rrule,
 				'No parameter were found. Parameter should be defined like NAME=RULE separated by semi-colon";"'
@@ -710,7 +710,7 @@ class RRule {
 					break;
 				case Parameters::BYSECOND:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYSECOND,
 							$param,
@@ -722,7 +722,7 @@ class RRule {
 					break;
 				case Parameters::BYMINUTE:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYMINUTE,
 							$param,
@@ -734,7 +734,7 @@ class RRule {
 					break;
 				case Parameters::BYHOUR:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+					if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYHOUR,
 							$param,
@@ -747,7 +747,7 @@ class RRule {
 
 				case Parameters::BYDAY:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYDAY,
 							$param,
@@ -760,7 +760,7 @@ class RRule {
 					break;
 				case Parameters::BYMONTHDAY:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYMONTHDAY,
 							$param,
@@ -772,7 +772,7 @@ class RRule {
 					break;
 				case Parameters::BYYEARDAY:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYYEARDAY,
 							$param,
@@ -784,7 +784,7 @@ class RRule {
 					break;
 				case Parameters::BYWEEKNO:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYWEEKNO,
 							$param,
@@ -796,7 +796,7 @@ class RRule {
 					break;
 				case Parameters::BYMONTH:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYWEEKNO,
 							$param,
@@ -808,7 +808,7 @@ class RRule {
 					break;
 				case Parameters::BYSETPOS:
 					$params = explode(",", $param);
-					if(empty($params[0])){
+                    if($params === ['']){
 						throw new InvalidParameterValue(
 							Parameters::BYSETPOS,
 							$param,
