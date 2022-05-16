@@ -228,7 +228,7 @@ class RRule {
 
 		foreach($values as $value){
 
-			if(preg_match('/^(-|\+)?([1-9])?('.$valid_day_values.')+$/', $value, $matches) == false){
+			if(preg_match('/^([-+])?([1-9])?('.$valid_day_values.')+$/', $value, $matches) == false){
 				throw new InvalidParameterValue(
 					Parameters::BYDAY,
 					implode(',', $values),
