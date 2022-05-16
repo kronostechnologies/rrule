@@ -18,7 +18,7 @@
     "phpunit/phpunit": "9.5.20"
   },
   "require-dev": {
-    "vimeo/psalm": "^4.6"
+    "vimeo/psalm": "4.23.0"
   },
   "repositories": [
     {"type": "git", "url": "https://github.com/kronostechnologies/rrule"}
