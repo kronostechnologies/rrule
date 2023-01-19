@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset>
+    <rule ref="./vendor/kronostechnologies/php-coding-standard/phpcs.xml"/>
+
+    <exclude-pattern>src/Kronos/RRule/Enums/Days.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Enums/Frequencies.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Enums/Months.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/ExDate/Exceptions/InvalidExDate.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Exceptions/FrequencyRequired.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Exceptions/InvalidRRuleState.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Exceptions/InvalidRRule.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/Enum.php</exclude-pattern>
+    <exclude-pattern>tests/Kronos/ExDateDateTimeSetterTest.php</exclude-pattern>
+    <exclude-pattern>tests/Kronos/ExDateParserTest.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Enums/Parameters.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule/Exceptions/InvalidParameterValue.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/ExDate.php</exclude-pattern>
+    <exclude-pattern>tests/Kronos/RawRRuleGeneratorTest.php</exclude-pattern>
+    <exclude-pattern>tests/Kronos/RawRRuleParserTest.php</exclude-pattern>
+    <exclude-pattern>tests/Kronos/ExDateGenerateTest.php</exclude-pattern>
+    <exclude-pattern>src/Kronos/RRule.php</exclude-pattern>
+
+</ruleset>
