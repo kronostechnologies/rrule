@@ -17,7 +17,7 @@
     "php": "^8.1"
   },
   "require-dev": {
-    "vimeo/psalm": "5.13.1",
+    "vimeo/psalm": "5.14.0",
     "phpunit/phpunit": "10.2.6",
     "cyclonedx/cyclonedx-php-composer": "4.1.0",
     "squizlabs/php_codesniffer": "3.7.2",
