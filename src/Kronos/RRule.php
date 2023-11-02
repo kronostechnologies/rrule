@@ -2,6 +2,7 @@
 
 namespace Kronos;
 
+use DateTime;
 use Kronos\RRule\Enums\Parameters;
 use Kronos\RRule\Exceptions\InvalidParameterValue;
 use Kronos\RRule\Exceptions\InvalidRRule;
@@ -20,11 +21,11 @@ class RRule {
 	 */
 	protected $_frequency;
 	/**
-	 * @var \DateTime
+	 * @var DateTime
 	 */
 	protected $_until;
 	/**
-	 * @var \DateTime
+	 * @var DateTime
 	 */
 	protected $_until_in_current_timezone;
 	/**
@@ -102,11 +103,11 @@ class RRule {
 	/**
 	 * Will convert the timezone of $value to UTC with setTimezone('UTC').
 	 * Consider using the function setUntilAsString.
-	 * @param \DateTime $value
+	 * @param DateTime $value
 	 * @throws InvalidParameterValue
 	 * @return RRule
 	 */
-	public function setUntil(\DateTime $value){
+	public function setUntil(DateTime $value){
 		if(!self::validateUntilDate($value)){
 			throw new InvalidParameterValue(
 				Parameters::UNTIL,
@@ -131,28 +132,30 @@ class RRule {
 	 * @return RRule
 	 */
 	public function setUntilAsString($value){
-		$date = new \DateTime($value);
-		$error_string = '';
-		$error = \DateTime::getLastErrors();
-		if($error['warning_count'] > 0){
-			$error_string .= 'WARNINGS: '.implode(', ', $error['warnings']).';';
-		}
-		if($error['error_count'] > 0){
-			$error_string .= 'ERRORS: '.implode(', ', $error['errors']).';';
-		}
-		if($error_string){
-			throw new InvalidParameterValue(
-				Parameters::UNTIL,
-				$value,
-				'Could not parse Until date. '.$error_string
-			);
-		}
+		$date = new DateTime($value);
+		if($error = DateTime::getLastErrors()) {
+            $error_string = '';
+            if($error['warning_count'] > 0){
+                $error_string .= 'WARNINGS: '.implode(', ', $error['warnings']).';';
+            }
+            if($error['error_count'] > 0){
+                $error_string .= 'ERRORS: '.implode(', ', $error['errors']).';';
+            }
+            if($error_string){
+                throw new InvalidParameterValue(
+                    Parameters::UNTIL,
+                    $value,
+                    'Could not parse Until date. '.$error_string
+                );
+            }
+        }
+		
 		$this->setUntil($date);
 		return $this;
 	}
 	/**
 	 * Returns a DateTime object. The timezone is UTC so convert it if needed.
-	 * @return \DateTime|null Null is returned if the until date is not present in the rrule or if it was not previously set.
+	 * @return DateTime|null Null is returned if the until date is not present in the rrule or if it was not previously set.
 	 */
 	public function getUntil(){
 		return $this->_until;
@@ -161,7 +164,7 @@ class RRule {
 	/**
 	 * Return the until date into the current timezone.
 	 * The object returned use the date_default_timezone_get() function to get the default timezone at the time of assigning.
-	 * @return \DateTime
+	 * @return DateTime
 	 */
 	public function getUntilInDefaultTimezone(){
 		return $this->_until_in_current_timezone;
@@ -681,7 +684,7 @@ class RRule {
 				case Parameters::UNTIL:
 					if(self::validateUntilDateString($param)){
 						try{
-							$date_time = new \DateTime(trim($param, 'Z'), new \DateTimeZone('UTC'));
+							$date_time = new DateTime(trim($param, 'Z'), new \DateTimeZone('UTC'));
 							$recurrence->setUntil($date_time);
 						}
 						catch(\Exception $e){
@@ -830,11 +833,11 @@ class RRule {
 	/**
 	 * This function actually format the given $date using the rrule until date format constant (see RRULE::RRULE_UNTIL_DATE_FORMAT).
 	 * After formatting, it calls validateUntilDateString.
-	 * @param \DateTime $date
+	 * @param DateTime $date
 	 * @return bool true if valid otherwise false.
 	 * @throws \Exception only if the `preg_match` function failed.
 	 */
-	private static function validateUntilDate(\DateTime $date){
+	private static function validateUntilDate(DateTime $date){
 		return self::validateUntilDateString($date->format(self::RRULE_UNTIL_DATE_FORMAT));
 	}
 
