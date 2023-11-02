@@ -18,6 +18,4 @@
     <exclude-pattern>tests/Kronos/RawRRuleGeneratorTest.php</exclude-pattern>
     <exclude-pattern>tests/Kronos/RawRRuleParserTest.php</exclude-pattern>
     <exclude-pattern>tests/Kronos/ExDateGenerateTest.php</exclude-pattern>
-    <exclude-pattern>src/Kronos/RRule.php</exclude-pattern>
-
 </ruleset>
